@@ -31,14 +31,10 @@ void DanhSachPhieuMuon<PhieuMuon>::docFile(string fn) {
 		string ngayTra = v[4];
 		int tinhTrangPhieuMuon = stoi(v[5]);
 
-		if (maPhieu > PhieuMuon::getSoPhieuMuon()) {
-			PhieuMuon::setSoPhieuMuon(maPhieu); 
-		}
-		PhieuMuon phieuMuon(maBanDoc, maSach);
-		phieuMuon.setMaPhieu(maPhieu); 
+		PhieuMuon phieuMuon(maBanDoc, maSach, maPhieu, tinhTrangPhieuMuon);
 		phieuMuon.setNgayMuon(ngayMuon);
 		phieuMuon.setNgayTra(ngayTra);
-		phieuMuon.setTinhTrangPhieuMuon(tinhTrangPhieuMuon);
+
 
 		LinkedList<PhieuMuon>::addTail(phieuMuon);
 	}
@@ -183,6 +179,16 @@ void DanhSachPhieuMuon<PhieuMuon>::muon() {
 		LinkedList<PhieuMuon>::addTail(phieuMuon);
 		setColor(7);
 		cout << "\t\t\t\tMuon sach thanh cong!" << endl;
+
+		DanhSachSach<Sach> dsSach;
+		dsSach.docFile();
+		Sach* sach = dsSach.timSach(maSach);
+		if (sach != NULL) {
+			sach->setTinhTrangSach(1); 
+			dsSach.updateFile();
+		}
+		dsSach.docFile();
+
 		xuatFile("PhieuMuon.txt");
 	}
 }
@@ -215,8 +221,15 @@ void DanhSachPhieuMuon<PhieuMuon>::tra() {
 				return;
 			}
 			tmp->_data.setTinhTrangPhieuMuon(0);
-			//tmp->_data.traSach();                               ////
+			DanhSachSach<Sach> dsSach;
+			dsSach.docFile(); 
+			Sach* sach = dsSach.timSach(tmp->_data.getMaSach());
+			if (sach != NULL) {
+				sach->setTinhTrangSach(0); 
+				dsSach.updateFile();     
+			}
 			cout << "\t\t\t\tTra sach thanh cong!" << endl;
+			dsSach.docFile();
 			found = true;
 			break;
 		}
