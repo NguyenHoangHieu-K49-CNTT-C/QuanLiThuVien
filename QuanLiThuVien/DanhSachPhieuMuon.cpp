@@ -31,14 +31,9 @@ void DanhSachPhieuMuon<PhieuMuon>::docFile(string fn) {
 		string ngayTra = v[4];
 		int tinhTrangPhieuMuon = stoi(v[5]);
 
-		if (maPhieu > PhieuMuon::getSoPhieuMuon()) {
-			PhieuMuon::setSoPhieuMuon(maPhieu); 
-		}
-		PhieuMuon phieuMuon(maBanDoc, maSach);
-		phieuMuon.setMaPhieu(maPhieu); 
+		PhieuMuon phieuMuon(maBanDoc, maSach, maPhieu, tinhTrangPhieuMuon);
 		phieuMuon.setNgayMuon(ngayMuon);
 		phieuMuon.setNgayTra(ngayTra);
-		phieuMuon.setTinhTrangPhieuMuon(tinhTrangPhieuMuon);
 
 		LinkedList<PhieuMuon>::addTail(phieuMuon);
 	}
