@@ -1,18 +1,18 @@
-#pragma once
-#include "DanhSachPhieuMuon.h"
+#include "DanhSachSach.h"
 #include "LinkedList.h"
-#include "Header.h"
 
 
 /***********************************************************************************************
 * @Description     Lấy dữ liệu file txt
 * @parameter       Tên file txt
 *************************************************************************************************/
-template<class PhieuMuon>
-void DanhSachPhieuMuon<PhieuMuon>::docFile(string fn) {
-	ifstream is(fn);
+
+template<class Sach>
+void DanhSachSach<Sach>::docFile() {
+	ifstream is("Sach.txt");
 	if (!is.is_open()) {
 		cout << "Khong mo duoc file!!!" << endl;
+		exit(1);
 		return;
 	}
 	string s;
@@ -23,24 +23,10 @@ void DanhSachPhieuMuon<PhieuMuon>::docFile(string fn) {
 		while (getline(ss, tmp, '|')) {
 			v.push_back(tmp);
 		}
-		if (v.size() < 6) continue; 
-		int maPhieu = stoi(v[0]);
-		string maBanDoc = v[1];
-		string maSach = v[2];
-		string ngayMuon = v[3];
-		string ngayTra = v[4];
-		int tinhTrangPhieuMuon = stoi(v[5]);
+		if (v.size() != 9) continue;
+		Sach sach(v[0], v[1], v[2], v[3], stoi(v[4]), stoi(v[5]), stoi(v[6]), v[7], stoi(v[8]));
+		LinkedList<Sach>::addTail(sach);
 
-		if (maPhieu > PhieuMuon::getSoPhieuMuon()) {
-			PhieuMuon::setSoPhieuMuon(maPhieu); 
-		}
-		PhieuMuon phieuMuon(maBanDoc, maSach);
-		phieuMuon.setMaPhieu(maPhieu); 
-		phieuMuon.setNgayMuon(ngayMuon);
-		phieuMuon.setNgayTra(ngayTra);
-		phieuMuon.setTinhTrangPhieuMuon(tinhTrangPhieuMuon);
-
-		LinkedList<PhieuMuon>::addTail(phieuMuon);
 	}
 	is.close();
 }
@@ -49,189 +35,109 @@ void DanhSachPhieuMuon<PhieuMuon>::docFile(string fn) {
 * @Description     Ghi đè lên file txt
 * @parameter       Tên file txt
 *************************************************************************************************/
-template<class PhieuMuon>
-void DanhSachPhieuMuon<PhieuMuon>::xuatFile(string fn) {
-	ofstream os(fn);
+
+template<class Sach>
+void DanhSachSach<Sach>::updateFile() {
+	ofstream os("Sach.txt", ios::out);
 	if (!os.is_open()) {
 		cout << "Khong mo duoc file!!!" << endl;
 		return;
 	}
-
-	Node<PhieuMuon>* node = LinkedList<PhieuMuon>::getHead();
+	Node<Sach>* node = LinkedList<Sach>::getHead();
+	if (node == NULL) {
+		os.close();
+		return;
+	}
 	while (node != NULL) {
-		os << node->_data.getMaPhieu() << "|"
-			<< node->_data.getMaBanDoc() << "|"
-			<< node->_data.getMaSach() << "|"
-			<< node->_data.getNgayMuon() << "|"
-			<< node->_data.getNgayTra() << "|"
-			<< node->_data.getTinhTrangPhieuMuon() << endl;
+		os << node->_data.toString() << endl;
 		node = node->_pNext;
 	}
 	os.close();
 }
 
 /***********************************************************************************************
+* @Description     Ghi nối thêm sách vào cuối file Sach.txt
+* @parameter       Tên file txt
+*************************************************************************************************/
+
+template<class Sach>
+void DanhSachSach<Sach>::themVaoFile(Node<Sach>* sachMoi) {
+	ofstream os("Sach.txt", ios::app);
+	if (!os.is_open()) {
+		cout << "Khong mo duoc file!!!" << endl;
+		return;
+	}
+	if (sachMoi != NULL) {
+		os << sachMoi->_data.toString() << endl;
+	}
+	os.close();
+}
+
+/***********************************************************************************************
+* @Description     Thêm sách vào danh sách
+* @parameter       Sách cần thêm
+*************************************************************************************************/
+
+template<class Sach>
+void DanhSachSach<Sach>::themSach(Sach sachMoi) {
+	LinkedList<Sach>::addTail(sachMoi);
+}
+
+/***********************************************************************************************
 * @Description     Xuất Danh Sach Sach ra màn hình
 *************************************************************************************************/
-template<class PhieuMuon>
-void DanhSachPhieuMuon<PhieuMuon>::xuatConsole() {
-	system("cls");
-	Node<PhieuMuon>* tmp = LinkedList<PhieuMuon>::getHead();
-	if (tmp == NULL) {
-		setColor(7);
-		cout << "Danh sach phieu muon rong!" << endl;
-	}
+
+template<class Sach>
+void DanhSachSach<Sach>::display() {
+	Node<Sach>* sach = LinkedList<Sach>::getHead();
+	if (sach == NULL) return;
 	else {
 		setColor(14);
-		cout << "+---------------+---------------+---------------+---------------+---------------+---------------+" << endl;
-		cout << "| So phieu muon | Ma ban doc    | Ma sach       | Ngay muon     | Ngay tra      | Tinh trang    |" << endl;
-		cout << "+---------------+---------------+---------------+---------------+---------------+---------------+" << endl;
-		while (tmp != NULL) {
-			tmp->_data.xuat();
-			tmp = tmp->_pNext;
+		cout << "+---------+-----------------+-------------------+------------------+---------------+------------------+----------+------------------+-----------------+" << endl;
+		cout << "| Ma Sach | Ten Sach        | Ten Tac Gia       | Nha Xuat Ban     | Gia Sach      | Nam Phat Hanh    | So Trang | Ngay Nhap Kho    | Tinh Trang Sach |" << endl;
+		cout << "+---------+-----------------+-------------------+------------------+---------------+------------------+----------+------------------+-----------------+" << endl;
+		while (sach != NULL) {
+			sach->_data.display();
+			sach = sach->_pNext;
+			cout << "+---------+-----------------+-------------------+------------------+---------------+------------------+----------+------------------+-----------------+" << endl;
 		}
-		setColor(14);
-		cout << "+---------------+---------------+---------------+---------------+---------------+---------------+" << endl;
-	}
-	xuatFile("PhieuMuon.txt");
-	system("pause");
-	system("cls");
-}
-
-/***********************************************************************************************
-* @Description     Kiểm tra dữ liệu nhập vào đạt chuẩn hay không
-* @parameter       chuỗi cần kiểm tra
-* @return          Trả về true nếu chuỗi đúng chuẩn và false nếu chuỗi không đúng chuẩn
-*************************************************************************************************/
-template<class PhieuMuon>
-bool DanhSachPhieuMuon<PhieuMuon>::kiemTra(const string& st) {
-	for (char c : st) {
-		if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9'))) {
-			return false;
-		}
-	}
-	return true;
-}
-
-
-/***********************************************************************************************
-* @Description     Xử lí tháo tác mượn sách và tạo phiếu mượn
-*************************************************************************************************/
-template<class PhieuMuon>
-void DanhSachPhieuMuon<PhieuMuon>::muon() {
-	Node<PhieuMuon>* tmp = LinkedList<PhieuMuon>::getHead();
-	string maSach, maBanDoc;
-	int cnt =0;
-	do {
-		setColor(7);
-		cout << "\n\n\t\t\t\tNhap ma sach (MSxxxx):  ";
-		setColor(7);
-		getline(cin, maSach);
-		if (!kiemTra(maSach)) {
-			setColor(7);
-			cout << "Ma sach chi duoc nhap chu va so! Vui long nhap lai." << endl;
-		}
-		if (maSach.substr(0, 2) != "MS" || !isDigit(maSach.substr(2, 4))) {
-			setColor(4);
-			cout << "\t\t\t\tMa Sach phai theo dinh dang (MSxxxx)  " << endl;
-			setColor(7);
-			continue;
-		}
-		if (maSach.length() == 6) {
-			break;
-		}
-
-		setColor(4);
-		cout << "\t\t\t\tVui long nhap Ma Sach voi du 6 ki tu!" << endl;
-		setColor(7);
-	} while (!kiemTra(maSach));
-
-
-	if (!kiemTraSachTonTai(maSach)) {
-		cout << "\t\t\t\tMa sach khong ton tai!" << endl;
-		return;
-	}
-	do {
-		setColor(7);
-		cout << "\t\t\t\tNhap ma ban doc:  ";
-		setColor(7);
-		getline(cin, maBanDoc);
-		if (!kiemTra(maBanDoc)) {
-			setColor(4);
-			cout << "\t\t\t\tMa ban doc chi duoc nhap chu va so! Vui long nhap lai." << endl;
-		}
-	} while (!kiemTra(maBanDoc));
-	if (!kiemTraBanDocTonTai(maBanDoc)) {
-		cout << "\t\t\t\tMa ban doc khong ton tai!" << endl;
-		return;
-	}
-	bool sachDaMuon = false;
-	while (tmp != NULL) {
-		if (tmp->_data.getMaSach() == maSach && tmp->_data.getTinhTrangPhieuMuon() == 1) {
-			sachDaMuon = true;
-			break;
-		}
-		tmp = tmp->_pNext;
-	}
-	if (sachDaMuon) {
-		setColor(7);
-		cout << "\t\t\t\tSach da duoc muon boi nguoi khac!" << endl;
-	}
-	else {
-		PhieuMuon phieuMuon(maBanDoc, maSach, LinkedList<PhieuMuon>::getSize() + 1);
-		//PhieuMuon phieuMuon(maBanDoc, maSach);
-		LinkedList<PhieuMuon>::addTail(phieuMuon);
-		setColor(7);
-		cout << "\t\t\t\tMuon sach thanh cong!" << endl;
-		xuatFile("PhieuMuon.txt");
 	}
 }
 
 /***********************************************************************************************
-* @Description     Xử lí tháo tác trả sách và xóa phiếu mượn
+* @Description     Tìm sách trong danh sách sách theo mã sách
+* @parameter       Mã sách cần tìm
+* @return          Trả về địa chỉ của Sách nếu tìm thấy, NULL nếu không tìm thấy
 *************************************************************************************************/
-template<class PhieuMuon>
-void DanhSachPhieuMuon<PhieuMuon>::tra() {
-	string soPhieuMuon;
-	setColor(7);
-	cout << "\n\t\t\t\tNhap so phieu muon: ";
-	getline(cin, soPhieuMuon);
-	if (soPhieuMuon.empty() || !all_of(soPhieuMuon.begin(), soPhieuMuon.end(), isdigit)) {
 
-		cout << "\t\t\t\tSo phieu muon khong hop le!" << endl;
-		system("pause");
-		system("cls");
-		return;
-	}
-	bool found = false;
-	Node<PhieuMuon>* tmp = LinkedList<PhieuMuon>::getHead();
-	int SPM = stoi(soPhieuMuon);
-	while (tmp != NULL) {
-		if (tmp->_data.getMaPhieu() == SPM) {
-			if (tmp->_data.getTinhTrangPhieuMuon() == 0) {
-				cout << "\t\t\t\tSach dang khong ai muon!" << endl;
-				system("pause");
-				system("cls");
-				return;
-			}
-			tmp->_data.setTinhTrangPhieuMuon(0);
-			//tmp->_data.traSach();                               ////
-			cout << "\t\t\t\tTra sach thanh cong!" << endl;
-			found = true;
-			break;
+template<class Sach>
+Sach* DanhSachSach<Sach>::timSach(string masach) {
+	Node<Sach>* node = LinkedList<Sach>::getHead();
+	while (node != NULL) {
+		if (node->_data.getMaSach() == masach) {
+			return &(node->_data);
 		}
-		tmp = tmp->_pNext;
+		node = node->_pNext;
 	}
-	if (!found) {
-
-		cout << "\t\t\t\tSo phieu muon khong ton tai!" << endl;
-	}
-	else{
-		cout << tmp->_data.getTinhTrangPhieuMuon();
-		xuatFile("PhieuMuon.txt");
-	}
-	system("pause");
-	system("cls");
+	return NULL;
 }
 
+/***********************************************************************************************
+* @Description     Xóa sách trong danh sách sách theo mã sách
+* @parameter       Mã sách cần xóa
+* @attention       Nếu Danh sách sách rỗng hoặc sách đang được mượn thì thông báo ngoại lệ
+*************************************************************************************************/
 
+template<class Sach>
+void DanhSachSach<Sach>::xoaSach(string masach) {
+	Node<Sach>* pNode = LinkedList<Sach>::getHead();
+	while (pNode != NULL) {
+		if (pNode->_data.getMaSach() == masach) {
+			LinkedList<Sach>::remove(pNode);
+			setColor(2);
+			return;
+		}
+		pNode = pNode->_pNext;
+	}
+	cout << "\t\tKhong co sach trong danh sach!" << endl;
+}
