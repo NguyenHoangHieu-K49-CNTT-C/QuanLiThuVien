@@ -1,18 +1,10 @@
 #include "PhieuMuon.h"
 
-PhieuMuon::PhieuMuon(const PhieuMuon& p) {
-    MaPhieu = p.MaPhieu;
-	MaBanDoc = p.MaBanDoc;
-	MaSach = p.MaSach;
-	NgayMuon = p.NgayMuon;
-	NgayTra = p.NgayTra;
-	TinhTrangPhieuMuon = p.TinhTrangPhieuMuon;
-}
 
 PhieuMuon::PhieuMuon(string MBD, string MS)
     : MaBanDoc(MBD), MaSach(MS), TinhTrangPhieuMuon(1){
     NgayMuon = getCurrentDate();
-    int day, month, year;
+    int day, month, year,hour,min;
     int result = sscanf(NgayMuon.c_str(), "%d/%d/%d", &day, &month, &year);
 
     if (result != 3) {
@@ -27,21 +19,22 @@ PhieuMuon::PhieuMuon(string MBD, string MS)
     MaPhieu = ++SoPhieuMuon;
 
 }
-
 int PhieuMuon::SoPhieuMuon = 0;
-int PhieuMuon::getSoPhieuMuon() { return SoPhieuMuon; }
-int PhieuMuon::getMaPhieu() { return MaPhieu; }
-string PhieuMuon::getMaBanDoc() { return MaBanDoc; }
-string PhieuMuon::getMaSach() { return MaSach; }
-string PhieuMuon::getNgayMuon() { return NgayMuon; }
-string PhieuMuon::getNgayTra() { return NgayTra; }
-int PhieuMuon::getTinhTrangPhieuMuon() { return TinhTrangPhieuMuon; }
+int PhieuMuon::getSoPhieuMuon()  { return SoPhieuMuon; }
+int PhieuMuon::getMaPhieu() const { return MaPhieu; }
+string PhieuMuon::getMaBanDoc() const { return MaBanDoc; }
+string PhieuMuon::getMaSach() const { return MaSach; }
+string PhieuMuon::getNgayMuon()const { return NgayMuon; }
+string PhieuMuon::getNgayTra() const { return NgayTra; }
+int PhieuMuon::getTinhTrangPhieuMuon()const { return TinhTrangPhieuMuon; }
 
+void PhieuMuon::setSoPhieuMuon(int soPhieu) { SoPhieuMuon = soPhieu; }
+void  PhieuMuon::setMaPhieu(int i) { MaPhieu = i; }
 void PhieuMuon::setMaBanDoc(string s) { MaBanDoc = s; }
 void PhieuMuon::setMaSach(string s) { MaSach = s; }
 void PhieuMuon::setNgayMuon(string ngayMuon) { NgayMuon = ngayMuon; }
 void PhieuMuon::setNgayTra(string ngayTra) { NgayTra = ngayTra; }
-void PhieuMuon::setTinhTrangPhieu(int i) { TinhTrangPhieuMuon = i; }
+void PhieuMuon::setTinhTrangPhieuMuon(int i) { TinhTrangPhieuMuon = i; }
 void PhieuMuon::traSach() { TinhTrangPhieuMuon = 0; }  
 void PhieuMuon::xuat() {
     int dayMuon, monthMuon, yearMuon;
@@ -60,7 +53,7 @@ void PhieuMuon::xuat() {
         cerr << "Lỗi: Ngày trả không hợp lệ!" << endl;
         return; 
     }
-
+    setColor(7);
     cout << "| " << setw(14) << left << MaPhieu
         << "| " << setw(14) << left << MaBanDoc
         << "| " << setw(14) << left << MaSach
@@ -74,11 +67,11 @@ void PhieuMuon::xuat() {
         << "" << setw(5) << left << ""
         << "| " << setw(14) << left;
     if (TinhTrangPhieuMuon == 1) {
-        setColor(4);
+        setColor(7);
         cout << "Dang muon";
     }
     else {
-        setColor(2);
+        setColor(7);
         cout << "Da tra";
     }
     setColor(2);
